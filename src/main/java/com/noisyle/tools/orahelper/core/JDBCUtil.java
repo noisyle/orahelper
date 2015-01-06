@@ -6,11 +6,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class JDBCUtil {
-	public static boolean testConnection(String url, String username, String password) {
+	public static boolean testConnection(String url, String username, String password) throws Exception {
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
 		} catch (ClassNotFoundException e) {
 			System.err.println("ClassNotFoundException: " + e);
+			throw new Exception("驱动加载失败，原因：" + e.getMessage(), e);
 		}
 		boolean result = false;
 		try {
@@ -20,24 +21,9 @@ public class JDBCUtil {
 			con=null;
 		} catch (SQLException e) {
 			System.err.println("SQLException: " + e);
+			throw new Exception("连接数据库失败，原因：" + e.getMessage(), e);
 		}
 		return result;
-	}
-	
-	public static Connection getConnection(String url, String username, String password) {
-		try {
-			Class.forName("oracle.jdbc.OracleDriver");
-		} catch (ClassNotFoundException e) {
-			System.err.println("ClassNotFoundException: " + e);
-		}
-		
-		try {
-			Connection con = DriverManager.getConnection(url, username, password);
-			return con;
-		} catch (SQLException e) {
-			System.err.println("SQLException: " + e);
-		}
-		return null;
 	}
 	
 	public static void createTablespace(String ts_name) {

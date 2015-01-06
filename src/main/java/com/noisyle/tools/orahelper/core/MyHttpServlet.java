@@ -6,7 +6,10 @@ import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.Template;
@@ -17,7 +20,8 @@ import org.apache.velocity.app.VelocityEngine;
 abstract public class MyHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = -1262601962778794684L;
 
-	private static VelocityEngine ve;
+	protected VelocityEngine ve;
+	protected VelocityContext context;
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -33,6 +37,16 @@ abstract public class MyHttpServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+		if ((!(req instanceof HttpServletRequest)) || (!(res instanceof HttpServletResponse))) {
+			throw new ServletException("non-HTTP request or response");
+		}
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
+		context = new VelocityContext();
+		service(request, response);
 	}
 
 	protected void render(HttpServletResponse response, String template, VelocityContext context) {

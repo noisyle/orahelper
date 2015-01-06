@@ -7,8 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.VelocityContext;
-
 import com.noisyle.tools.orahelper.core.JDBCUtil;
 import com.noisyle.tools.orahelper.core.MyHttpServlet;
 
@@ -18,7 +16,6 @@ public class CreateTablespaceServlet extends MyHttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		VelocityContext context = new VelocityContext();
 		render(response, "createTablespace.html", context);
 	}
 	
