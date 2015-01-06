@@ -1,0 +1,23 @@
+<h1 class="page-header">设置</h1>
+
+<div class="container-fluid">
+<div class="row">
+<div class="col-sm-8 col-sm-offset-1">
+<form action="/home" method="post">
+  <div class="form-group">
+    <label for="con_username">用户名</label>
+    <input type="text" class="form-control" name="con_username" placeholder="用户名" value="$con_username">
+  </div>
+  <div class="form-group">
+    <label for="con_password">密码</label>
+    <input type="text" class="form-control" name="con_password" placeholder="密码" value="$con_password">
+  </div>
+  <div class="form-group">
+    <label for="con_url">连接串</label>
+    <input type="text" class="form-control" name="con_url" placeholder="连接串，如：jdbc:oracle:thin:@127.0.0.1:1521:orcl" value="$con_url">
+  </div>
+  <button type="submit" class="btn btn-default">连接</button>
+</form>
+</div>
+</div>
+</div>
