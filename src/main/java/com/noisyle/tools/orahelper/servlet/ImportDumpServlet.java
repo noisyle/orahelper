@@ -3,6 +3,7 @@ package com.noisyle.tools.orahelper.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +33,7 @@ public class ImportDumpServlet extends MyHttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			DiskFileItemFactory df = new DiskFileItemFactory();
-	        //设定阀值1M，如果超过这个值，则文件就直接写到临时文件，不会一直占用内存  
+	        //设定阈值1M，如果超过这个值，则文件就直接写到临时文件，不会一直占用内存  
 	        //利用这个特性可在上传大文件的时候不会占用大量内存，可以提高并发使用量。  
 			df.setSizeThreshold(1024 * 1024);
 
@@ -52,7 +53,7 @@ public class ImportDumpServlet extends MyHttpServlet {
 					if (fileName == null || "".equals(fileName.trim())) {
 						continue;
 					} else {
-						tmpFile = new File(tmpPath, fileName);
+						tmpFile = new File(tmpPath, UUID.randomUUID().toString()+".dmp");
 						fileItem.write(tmpFile);
 					}
 				}else{
