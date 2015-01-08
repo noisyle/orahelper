@@ -19,21 +19,21 @@ public class ConnectServlet extends MyHttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		context.put("con_username", DBConfig.con_username);
 		context.put("con_password", DBConfig.con_password);
-		context.put("con_url", DBConfig.con_url);
+		context.put("con_ip", DBConfig.con_ip);
+		context.put("con_port", DBConfig.con_port);
+		context.put("con_ssid", DBConfig.con_ssid);
 		render(response, "connect.html", context);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String con_username = request.getParameter("con_username");
-		String con_password = request.getParameter("con_password");
-		String con_url = request.getParameter("con_url");
+		DBConfig.con_username = request.getParameter("con_username");
+		DBConfig.con_password = request.getParameter("con_password");
+		DBConfig.con_ip = request.getParameter("con_ip");
+		DBConfig.con_port = request.getParameter("con_port");
+		DBConfig.con_ssid = request.getParameter("con_ssid");
 		try {
-			if(JDBCUtil.testConnection(con_url, con_username, con_password)){
-				DBConfig.con_username = con_username;
-				DBConfig.con_password = con_password;
-				DBConfig.con_url = con_url;
-			}
+			JDBCUtil.testConnection(DBConfig.getCon_url(), DBConfig.con_username, DBConfig.con_password);
 			context.put("msg_info", "连接成功");
 		} catch (Exception e) {
 			context.put("msg_error", e.getMessage());

@@ -3,18 +3,29 @@
 <div class="container-fluid">
 <div class="row">
 <div class="col-sm-8 col-sm-offset-1">
+<div class="alert alert-info" role="alert">
+<strong>注意！ </strong>创建表空间、创建用户等操作需要DBA权限
+</div>
 <form action="/connect" method="post">
   <div class="form-group">
+    <label for="con_ip">服务器地址</label>
+    <input type="text" class="form-control" name="con_ip" placeholder="填写ip或主机名" required value="$!con_ip">
+  </div>
+  <div class="form-group">
+    <label for="con_port">端口号</label>
+    <input type="text" class="form-control" name="con_port" placeholder="端口号" required value="$!con_port">
+  </div>
+  <div class="form-group">
+    <label for="con_ssid">实例名</label>
+    <input type="text" class="form-control" name="con_ssid" placeholder="填写数据库实例名，如：orcl" required value="$!con_ssid">
+  </div>
+  <div class="form-group">
     <label for="con_username">用户名</label>
-    <input type="text" class="form-control" name="con_username" placeholder="用户名" required value="$con_username">
+    <input type="text" class="form-control" name="con_username" placeholder="用户名" required value="$!con_username">
   </div>
   <div class="form-group">
     <label for="con_password">密码</label>
-    <input type="text" class="form-control" name="con_password" placeholder="密码" required value="$con_password">
-  </div>
-  <div class="form-group">
-    <label for="con_url">连接串</label>
-    <input type="text" class="form-control" name="con_url" placeholder="连接串，如：jdbc:oracle:thin:@127.0.0.1:1521:orcl" required value="$con_url">
+    <input type="text" class="form-control" name="con_password" placeholder="密码" required value="$!con_password">
   </div>
   <button type="submit" class="btn btn-primary">连接</button>
 </form>

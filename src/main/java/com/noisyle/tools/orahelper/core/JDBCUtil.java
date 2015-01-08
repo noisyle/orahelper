@@ -1,5 +1,7 @@
 package com.noisyle.tools.orahelper.core;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -35,7 +37,7 @@ public class JDBCUtil {
 		}
 		
 		try {
-			Connection con = DriverManager.getConnection(DBConfig.con_url, DBConfig.con_username, DBConfig.con_password);
+			Connection con = DriverManager.getConnection(DBConfig.getCon_url(), DBConfig.con_username, DBConfig.con_password);
 			String createTableSpace = "CREATE TABLESPACE "+ts_name+" LOGGING DATAFILE '"+ts_name+".DBF' SIZE 100M AUTOEXTEND ON NEXT 200M MAXSIZE 20480M EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO";
 
 			Statement stmt = con.createStatement();
@@ -58,7 +60,7 @@ public class JDBCUtil {
 		}
 		
 		try {
-			Connection con = DriverManager.getConnection(DBConfig.con_url, DBConfig.con_username, DBConfig.con_password);
+			Connection con = DriverManager.getConnection(DBConfig.getCon_url(), DBConfig.con_username, DBConfig.con_password);
 			String createUser = "CREATE USER "+username+" IDENTIFIED BY "+password+" DEFAULT TABLESPACE "+tablespace+" TEMPORARY TABLESPACE TEMP";
 			
 			String roles = "CONNECT,RESOURCE";
@@ -73,6 +75,65 @@ public class JDBCUtil {
 		} catch (SQLException e) {
 			System.err.println("SQLException: " + e);
 			throw new Exception("创建用户失败，原因：" + e.getMessage(), e);
+		}
+	}
+	
+	public static String exportDump(String filePath) throws Exception {
+		try {
+			String cmdStr = "exp "+DBConfig.con_username+"/"+ DBConfig.con_password+"@//"+ DBConfig.con_ip+":"+DBConfig.con_port+"/"+ DBConfig.con_ssid+" file=\""+filePath+"\" ";
+			System.out.println(cmdStr);
+			Runtime runtime = Runtime.getRuntime();
+			Process process = runtime.exec(cmdStr);
+			String line = null;
+			StringBuffer buffer = new StringBuffer();
+			BufferedReader br = new BufferedReader(new InputStreamReader(process.getErrorStream(),"GBK"));
+			// 读取ErrorStream很关键，这个解决了挂起的问题。
+			while ((line = br.readLine()) != null) {
+				System.err.println(line);
+				buffer.append(line).append("<br />");
+			}
+			br = new BufferedReader(new InputStreamReader(process.getInputStream(),"GBK"));
+			while ((line = br.readLine()) != null) {
+				System.err.println(line);
+				buffer.append(line).append("<br />");
+			}
+			process.waitFor();
+//			if (process.waitFor() != 0) {
+//				throw new Exception("导出失败");
+//			}
+			return buffer.toString();
+
+		} catch (Exception e) {
+			System.err.println("SQLException: " + e);
+			throw new Exception("导出失败，原因：" + e.getMessage(), e);
+		}
+	}
+	
+	public static String importDump(String filePath, String username) throws Exception {
+		try {
+			String cmdStr = "imp "+DBConfig.con_username+"/"+ DBConfig.con_password+"@//"+ DBConfig.con_ip+":"+DBConfig.con_port+"/"+ DBConfig.con_ssid+" file=\""+filePath+"\" "
+					+" fromuser="+username+" touser="+DBConfig.con_username;
+			System.out.println(cmdStr);
+			Runtime runtime = Runtime.getRuntime();
+			Process process = runtime.exec(cmdStr);
+			String line = null;
+			StringBuffer buffer = new StringBuffer();
+			BufferedReader br = new BufferedReader(new InputStreamReader(process.getErrorStream(),"GBK"));
+			// 读取ErrorStream很关键，这个解决了挂起的问题。
+			while ((line = br.readLine()) != null) {
+				System.err.println(line);
+				buffer.append(line).append("<br />");
+			}
+			br = new BufferedReader(new InputStreamReader(process.getInputStream(),"GBK"));
+			while ((line = br.readLine()) != null) {
+				System.err.println(line);
+				buffer.append(line).append("<br />");
+			}
+			process.waitFor();
+			return buffer.toString();
+		} catch (Exception e) {
+			System.err.println("SQLException: " + e);
+			throw new Exception("导入失败，原因：" + e.getMessage(), e);
 		}
 	}
 }
