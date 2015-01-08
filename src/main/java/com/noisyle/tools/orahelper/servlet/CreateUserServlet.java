@@ -24,6 +24,9 @@ public class CreateUserServlet extends MyHttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String tablespace = request.getParameter("tablespace");
+		String exp = request.getParameter("exp");
+		String imp = request.getParameter("imp");
+		String dba = request.getParameter("dba");
 		try {
 			JDBCUtil.createUser(username, password, tablespace);
 			context.put("msg_info", "用户创建成功");

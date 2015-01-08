@@ -63,7 +63,7 @@ public class JDBCUtil {
 			Connection con = DriverManager.getConnection(DBConfig.getCon_url(), DBConfig.con_username, DBConfig.con_password);
 			String createUser = "CREATE USER "+username+" IDENTIFIED BY "+password+" DEFAULT TABLESPACE "+tablespace+" TEMPORARY TABLESPACE TEMP";
 			
-			String roles = "CONNECT,RESOURCE";
+			String roles = "CONNECT,RESOURCE,exp_full_database,imp_full_database";
 			String grant = "GRANT "+roles+" TO "+username;
 			
 			Statement stmt = con.createStatement();

@@ -52,6 +52,7 @@ abstract public class MyHttpServlet extends HttpServlet {
 	protected void render(HttpServletResponse response, String template, VelocityContext context) {
 		StringWriter writer = new StringWriter();
 		context.put("page", template);
+		
 		Template t = ve.getTemplate("base.html");
 		t.merge(context, writer);
 
