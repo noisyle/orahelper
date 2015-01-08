@@ -10,21 +10,23 @@ import javax.servlet.http.HttpServletResponse;
 import com.noisyle.tools.orahelper.core.JDBCUtil;
 import com.noisyle.tools.orahelper.core.MyHttpServlet;
 
-@WebServlet(name="CreateTablespaceServlet",urlPatterns="/createTablespace")
-public class CreateTablespaceServlet extends MyHttpServlet {
+@WebServlet(name="CreateUserServlet",urlPatterns="/createUser")
+public class CreateUserServlet extends MyHttpServlet {
 	private static final long serialVersionUID = 2519010741218835166L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		render(response, "createTablespace.html", context);
+		render(response, "createUser.html", context);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String ts_name = request.getParameter("ts_name");
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		String tablespace = request.getParameter("tablespace");
 		try {
-			JDBCUtil.createTablespace(ts_name);
-			context.put("msg_info", "表空间创建成功");
+			JDBCUtil.createUser(username, password, tablespace);
+			context.put("msg_info", "用户创建成功");
 		} catch (Exception e) {
 			context.put("msg_error", e.getMessage());
 		}

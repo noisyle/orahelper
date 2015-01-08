@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.noisyle.tools.orahelper.core.Config;
+import com.noisyle.tools.orahelper.core.DBConfig;
 import com.noisyle.tools.orahelper.core.JDBCUtil;
 import com.noisyle.tools.orahelper.core.MyHttpServlet;
 
@@ -17,9 +17,9 @@ public class ConnectServlet extends MyHttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		context.put("con_username", Config.con_username);
-		context.put("con_password", Config.con_password);
-		context.put("con_url", Config.con_url);
+		context.put("con_username", DBConfig.con_username);
+		context.put("con_password", DBConfig.con_password);
+		context.put("con_url", DBConfig.con_url);
 		render(response, "connect.html", context);
 	}
 	
@@ -30,10 +30,11 @@ public class ConnectServlet extends MyHttpServlet {
 		String con_url = request.getParameter("con_url");
 		try {
 			if(JDBCUtil.testConnection(con_url, con_username, con_password)){
-				Config.con_username = con_username;
-				Config.con_password = con_password;
-				Config.con_url = con_url;
+				DBConfig.con_username = con_username;
+				DBConfig.con_password = con_password;
+				DBConfig.con_url = con_url;
 			}
+			context.put("msg_info", "连接成功");
 		} catch (Exception e) {
 			context.put("msg_error", e.getMessage());
 		}

@@ -46,7 +46,7 @@
           <ul class="nav nav-sidebar">
             <li><a href="/connect">设置连接</a></li>
             <li><a href="/createTablespace">创建表空间</a></li>
-            <li><a href="">创建用户</a></li>
+            <li><a href="/createUser">创建用户</a></li>
             <li><a href="">导入</a></li>
             <li><a href="">导出</a></li>
           </ul>
@@ -54,6 +54,7 @@
         
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         #parse($page)
+        
         </div>
       </div>
     </div>
@@ -92,9 +93,11 @@
 	}
 
 	#if($msg_info)
+		#set($msg_info = $msg_info.trim())
 		showMsg("$msg_info", 1);
 	#end
 	#if($msg_error)
+		#set($msg_error = $msg_error.trim())
 		showMsg("$msg_error", 1);
 	#end
     </script>
