@@ -1,4 +1,4 @@
-<h1 class="page-header">设置链接</h1>
+<h1 class="page-header">设置连接</h1>
 
 <div class="container-fluid">
 <div class="row">
@@ -6,41 +6,58 @@
 <div class="alert alert-info" role="alert">
 <strong>注意！ </strong>创建表空间、创建用户等操作需要DBA权限
 </div>
-<form action="/connect" method="post">
+<form action="/connect?method=delete" method="post" class="well">
   <div class="form-group">
     <label for="conninfos">已保存的连接</label>
-    <select class="form-control" name="conninfo">
+    <select class="form-control" id="conninfo" name="conninfo">
 #foreach($conninfo in $conninfos)
-	  <option value="$conninfo.alias">$conninfo.alias</option>
+	  <option value="$conninfo.alias" data-host="$conninfo.host" data-port="$conninfo.port" data-ssid="$conninfo.ssid" data-username="$conninfo.username" data-password="$conninfo.password">$conninfo.alias</option>
 #end
 	</select>
   </div>
+  <button type="submit" class="btn btn-danger">删除</button>
+</form>
+<form action="/connect" method="post" class="well">
   <div class="form-group">
     <label for="con_alias">别名</label>
-    <input type="text" class="form-control" name="con_alias" placeholder="别名" required value="$!con_alias">
+    <input type="text" class="form-control" id="con_alias" name="con_alias" placeholder="别名" required>
   </div>
   <div class="form-group">
-    <label for="con_ip">服务器地址</label>
-    <input type="text" class="form-control" name="con_ip" placeholder="填写ip或主机名" required value="$!con_ip">
+    <label for="con_host">服务器地址</label>
+    <input type="text" class="form-control" id="con_host" name="con_host" placeholder="填写ip或主机名" required>
   </div>
   <div class="form-group">
     <label for="con_port">端口号</label>
-    <input type="text" class="form-control" name="con_port" placeholder="端口号" required value="$!con_port">
+    <input type="text" class="form-control" id="con_port" name="con_port" placeholder="端口号" required>
   </div>
   <div class="form-group">
     <label for="con_ssid">实例名</label>
-    <input type="text" class="form-control" name="con_ssid" placeholder="填写数据库实例名，如：orcl" required value="$!con_ssid">
+    <input type="text" class="form-control" id="con_ssid" name="con_ssid" placeholder="填写数据库实例名，如：orcl" required>
   </div>
   <div class="form-group">
     <label for="con_username">用户名</label>
-    <input type="text" class="form-control" name="con_username" placeholder="用户名" required value="$!con_username">
+    <input type="text" class="form-control" id="con_username" name="con_username" placeholder="用户名" required>
   </div>
   <div class="form-group">
     <label for="con_password">密码</label>
-    <input type="text" class="form-control" name="con_password" placeholder="密码" required value="$!con_password">
+    <input type="text" class="form-control" id="con_password" name="con_password" placeholder="密码" required>
   </div>
   <button type="submit" class="btn btn-primary">添加</button>
 </form>
 </div>
 </div>
 </div>
+
+<script>
+$(function(){
+	$("#conninfo").change(function(){
+		var opt = $(this).find("option:selected");
+		$("#con_alias").val(opt.val());
+		$("#con_host").val(opt.attr("data-host"));
+		$("#con_port").val(opt.attr("data-port"));
+		$("#con_ssid").val(opt.attr("data-ssid"));
+		$("#con_username").val(opt.attr("data-username"));
+		$("#con_password").val(opt.attr("data-password"));
+	}).change();
+});
+</script>

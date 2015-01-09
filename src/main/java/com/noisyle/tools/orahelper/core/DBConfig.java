@@ -25,6 +25,16 @@ public class DBConfig {
 		}
 	}
 	
+	public static synchronized void DelConnInfo(String alias) {
+		try {
+			connInfoMap.remove(alias);
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.writerWithDefaultPrettyPrinter().writeValue(dbconfig, connInfoMap.values());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static ConnInfo getConnInfoByAlias(String alias) {
 		return connInfoMap.get(alias);
 	}
