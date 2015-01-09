@@ -19,7 +19,7 @@ public class DBConfig {
 		try {
 			connInfoMap.put(connInfo.getAlias(), connInfo);
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(dbconfig, connInfoMap.values());
+			mapper.writerWithDefaultPrettyPrinter().writeValue(dbconfig, connInfoMap.values());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -54,7 +54,7 @@ public class DBConfig {
 			System.out.println("创建数据库连接配置文件:"+dbconfig.getAbsolutePath());
 			dbconfig.createNewFile();
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(dbconfig, connInfoMap.values());
+			mapper.writerWithDefaultPrettyPrinter().writeValue(dbconfig, connInfoMap.values());
 		}else{
 			ObjectMapper mapper = new ObjectMapper();
 			ConnInfo[] infos = mapper.readValue(dbconfig, ConnInfo[].class);
