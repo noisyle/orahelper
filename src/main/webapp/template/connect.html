@@ -8,6 +8,18 @@
 </div>
 <form action="/connect" method="post">
   <div class="form-group">
+    <label for="conninfos">已保存的连接</label>
+    <select class="form-control" name="conninfo">
+#foreach($conninfo in $conninfos)
+	  <option value="$conninfo.alias">$conninfo.alias</option>
+#end
+	</select>
+  </div>
+  <div class="form-group">
+    <label for="con_alias">别名</label>
+    <input type="text" class="form-control" name="con_alias" placeholder="别名" required value="$!con_alias">
+  </div>
+  <div class="form-group">
     <label for="con_ip">服务器地址</label>
     <input type="text" class="form-control" name="con_ip" placeholder="填写ip或主机名" required value="$!con_ip">
   </div>
@@ -27,7 +39,7 @@
     <label for="con_password">密码</label>
     <input type="text" class="form-control" name="con_password" placeholder="密码" required value="$!con_password">
   </div>
-  <button type="submit" class="btn btn-primary">连接</button>
+  <button type="submit" class="btn btn-primary">添加</button>
 </form>
 </div>
 </div>

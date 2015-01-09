@@ -1,4 +1,4 @@
-<h1 class="page-header">导出</h1>
+<h1 class="page-header">导出dmp</h1>
 
 <div class="container-fluid">
 <div class="row">
@@ -8,12 +8,20 @@
 </div>
 <form action="/exportDump" method="post">
   <div class="form-group">
+    <label for="conninfos">选择连接</label>
+    <select class="form-control" id="conninfo" name="conninfo">
+#foreach($conninfo in $conninfos)
+	  <option value="$conninfo.alias" data-url="$conninfo.url" data-username="$conninfo.username">$conninfo.alias</option>
+#end
+	</select>
+  </div>
+  <div class="form-group">
     <label for="con_url">数据库</label>
-    <input type="text" class="form-control" value="$!con_url" disabled>
+    <input type="text" class="form-control" id="con_url" disabled>
   </div>
   <div class="form-group">
     <label for="con_username">用户名</label>
-    <input type="text" class="form-control" value="$!con_username" disabled>
+    <input type="text" class="form-control" id="con_username" disabled>
   </div>
   <div class="form-group">
     <label for="filename">文件名</label>
@@ -24,3 +32,13 @@
 </div>
 </div>
 </div>
+
+<script>
+$(function(){
+	$("#conninfo").change(function(){
+		var opt = $(this).find("option:selected");
+		$("#con_url").val(opt.attr("data-url"));
+		$("#con_username").val(opt.attr("data-username"));
+	}).change();
+});
+</script>

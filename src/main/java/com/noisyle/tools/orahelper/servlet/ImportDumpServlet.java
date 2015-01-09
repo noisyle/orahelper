@@ -24,8 +24,7 @@ public class ImportDumpServlet extends MyHttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		context.put("con_username", DBConfig.con_username);
-		context.put("con_url", DBConfig.getCon_url());
+		context.put("conninfos", DBConfig.getConnInfoList());
 		render(response, "importDump.html", context);
 	}
 
@@ -47,6 +46,7 @@ public class ImportDumpServlet extends MyHttpServlet {
 			List<FileItem> list = sf.parseRequest(request);
 			File tmpFile = null;
 			String username = null;
+			String conninfo = null;
 			for (FileItem fileItem : list) {
 				if(!fileItem.isFormField()){
 					String fileName = fileItem.getName();
@@ -58,13 +58,15 @@ public class ImportDumpServlet extends MyHttpServlet {
 					}
 				}else{
 					String fieldName = fileItem.getFieldName();
-					if ("username".equals(fieldName)) {  
-						username = new String(fileItem.getString("utf-8"));  
-	                }
+					if ("username".equals(fieldName)) {
+						username = new String(fileItem.getString("utf-8"));
+	                }else if ("conninfo".equals(fieldName)) {
+	                	conninfo = new String(fileItem.getString("utf-8"));
+					}
 				}
 			}
 			if (tmpFile != null) {
-				String result = JDBCUtil.importDump(tmpFile.getAbsolutePath(), username);
+				String result = JDBCUtil.importDump(conninfo, tmpFile.getAbsolutePath(), username);
 				context.put("msg_info", result);
 			}
 	  

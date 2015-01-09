@@ -7,8 +7,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.noisyle.tools.orahelper.entity.ConnInfo;
+
 public class JDBCUtil {
-	public static boolean testConnection(String url, String username, String password) throws Exception {
+	
+	public static boolean testConnection(ConnInfo info) throws Exception {
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
 		} catch (ClassNotFoundException e) {
@@ -17,7 +20,7 @@ public class JDBCUtil {
 		}
 		boolean result = false;
 		try {
-			Connection con = DriverManager.getConnection(url, username, password);
+			Connection con = DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
 			if(con!=null) result=true;
 			con.close();
 			con=null;
@@ -28,7 +31,7 @@ public class JDBCUtil {
 		return result;
 	}
 	
-	public static void createTablespace(String ts_name) throws Exception {
+	public static void createTablespace(String conn_alias, String ts_name) throws Exception {
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
 		} catch (ClassNotFoundException e) {
@@ -37,12 +40,13 @@ public class JDBCUtil {
 		}
 		
 		try {
-			Connection con = DriverManager.getConnection(DBConfig.getCon_url(), DBConfig.con_username, DBConfig.con_password);
+			ConnInfo info = DBConfig.getConnInfoByAlias(conn_alias);
+			Connection con = DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
 			String createTableSpace = "CREATE TABLESPACE "+ts_name+" LOGGING DATAFILE '"+ts_name+".DBF' SIZE 100M AUTOEXTEND ON NEXT 200M MAXSIZE 20480M EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO";
-
+			System.out.println("创建表空间:"+createTableSpace);
 			Statement stmt = con.createStatement();
 			stmt.execute(createTableSpace);
-
+			
 			stmt.close();
 			con.close();
 		} catch (SQLException e) {
@@ -51,7 +55,7 @@ public class JDBCUtil {
 		}
 	}
 	
-	public static void createUser(String username, String password, String tablespace) throws Exception {
+	public static void createUser(String conn_alias, String username, String password, String tablespace) throws Exception {
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
 		} catch (ClassNotFoundException e) {
@@ -60,7 +64,8 @@ public class JDBCUtil {
 		}
 		
 		try {
-			Connection con = DriverManager.getConnection(DBConfig.getCon_url(), DBConfig.con_username, DBConfig.con_password);
+			ConnInfo info = DBConfig.getConnInfoByAlias(conn_alias);
+			Connection con = DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
 			String createUser = "CREATE USER "+username+" IDENTIFIED BY "+password+" DEFAULT TABLESPACE "+tablespace+" TEMPORARY TABLESPACE TEMP";
 			
 			String roles = "CONNECT,RESOURCE,exp_full_database,imp_full_database";
@@ -78,9 +83,10 @@ public class JDBCUtil {
 		}
 	}
 	
-	public static String exportDump(String filePath) throws Exception {
+	public static String exportDump(String conn_alias, String filePath) throws Exception {
 		try {
-			String cmdStr = "exp "+DBConfig.con_username+"/"+ DBConfig.con_password+"@//"+ DBConfig.con_ip+":"+DBConfig.con_port+"/"+ DBConfig.con_ssid+" file=\""+filePath+"\" ";
+			ConnInfo info = DBConfig.getConnInfoByAlias(conn_alias);
+			String cmdStr = "exp "+info.getUsername()+"/"+info.getPassword()+"@//"+info.getHost()+":"+info.getPort()+"/"+ info.getSsid()+" file=\""+filePath+"\" ";
 			System.out.println(cmdStr);
 			Runtime runtime = Runtime.getRuntime();
 			Process process = runtime.exec(cmdStr);
@@ -94,7 +100,7 @@ public class JDBCUtil {
 			}
 			br = new BufferedReader(new InputStreamReader(process.getInputStream(),"GBK"));
 			while ((line = br.readLine()) != null) {
-				System.err.println(line);
+				System.out.println(line);
 				buffer.append(line).append("<br />");
 			}
 			process.waitFor();
@@ -109,10 +115,11 @@ public class JDBCUtil {
 		}
 	}
 	
-	public static String importDump(String filePath, String username) throws Exception {
+	public static String importDump(String conn_alias, String filePath, String username) throws Exception {
 		try {
-			String cmdStr = "imp "+DBConfig.con_username+"/"+ DBConfig.con_password+"@//"+ DBConfig.con_ip+":"+DBConfig.con_port+"/"+ DBConfig.con_ssid+" file=\""+filePath+"\" "
-					+" fromuser="+username+" touser="+DBConfig.con_username;
+			ConnInfo info = DBConfig.getConnInfoByAlias(conn_alias);
+			String cmdStr = "imp "+info.getUsername()+"/"+info.getPassword()+"@//"+info.getHost()+":"+info.getPort()+"/"+ info.getSsid()+" file=\""+filePath+"\" "
+					+" fromuser="+username+" touser="+info.getUsername();
 			System.out.println(cmdStr);
 			Runtime runtime = Runtime.getRuntime();
 			Process process = runtime.exec(cmdStr);
@@ -126,7 +133,7 @@ public class JDBCUtil {
 			}
 			br = new BufferedReader(new InputStreamReader(process.getInputStream(),"GBK"));
 			while ((line = br.readLine()) != null) {
-				System.err.println(line);
+				System.out.println(line);
 				buffer.append(line).append("<br />");
 			}
 			process.waitFor();

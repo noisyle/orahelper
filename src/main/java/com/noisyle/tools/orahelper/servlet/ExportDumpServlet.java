@@ -31,8 +31,7 @@ public class ExportDumpServlet extends MyHttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		context.put("con_username", DBConfig.con_username);
-		context.put("con_url", DBConfig.getCon_url());
+		context.put("conninfos", DBConfig.getConnInfoList());
 		render(response, "exportDump.html", context);
 	}
 
@@ -41,11 +40,12 @@ public class ExportDumpServlet extends MyHttpServlet {
 		try {
 			String fileName = request.getParameter("filename");
 			if(!fileName.endsWith(".dmp")) fileName += ".dmp";
+			String conninfo = request.getParameter("conninfo");
 			
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			String filePath = tmpDir + UUID.randomUUID().toString()+".dmp";
 			
-			JDBCUtil.exportDump(filePath);
+			JDBCUtil.exportDump(conninfo, filePath);
 
 			File downloadFile = new File(filePath);
 			if (downloadFile.exists()) {

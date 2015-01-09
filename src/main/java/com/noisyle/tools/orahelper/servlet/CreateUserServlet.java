@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.noisyle.tools.orahelper.core.DBConfig;
 import com.noisyle.tools.orahelper.core.JDBCUtil;
 import com.noisyle.tools.orahelper.core.MyHttpServlet;
 
@@ -16,11 +17,13 @@ public class CreateUserServlet extends MyHttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		context.put("conninfos", DBConfig.getConnInfoList());
 		render(response, "createUser.html", context);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String conninfo = request.getParameter("conninfo");
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String tablespace = request.getParameter("tablespace");
@@ -28,7 +31,7 @@ public class CreateUserServlet extends MyHttpServlet {
 		String imp = request.getParameter("imp");
 		String dba = request.getParameter("dba");
 		try {
-			JDBCUtil.createUser(username, password, tablespace);
+			JDBCUtil.createUser(conninfo, username, password, tablespace);
 			context.put("msg_info", "用户创建成功");
 		} catch (Exception e) {
 			context.put("msg_error", e.getMessage());
