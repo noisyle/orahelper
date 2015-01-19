@@ -4,8 +4,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import com.noisyle.tools.orahelper.entity.ConnInfo;
 
@@ -142,5 +149,70 @@ public class JDBCUtil {
 			System.err.println("SQLException: " + e);
 			throw new Exception("导入失败，原因：" + e.getMessage(), e);
 		}
+	}
+	
+	public static List querySessions(ConnInfo info) throws Exception {
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			System.err.println("ClassNotFoundException: " + e);
+			throw new Exception("驱动加载失败，原因：" + e.getMessage(), e);
+		}
+		List list = null;
+		try {
+			Connection con = DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
+			String sql = "select saddr,sid,serial#,username,status,to_char(logon_time,'yyyy-mm-dd hh24:mi:ss') as logon_time from v$session order by logon_time desc";
+			list = queryForList(con, sql);
+			con.close();
+			con=null;
+		} catch (SQLException e) {
+			System.err.println("SQLException: " + e);
+			throw new Exception("连接数据库失败，原因：" + e.getMessage(), e);
+		}
+		return list;
+	}
+	
+	public static void killSessions(ConnInfo info, String sid, String serial) throws Exception {
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			System.err.println("ClassNotFoundException: " + e);
+			throw new Exception("驱动加载失败，原因：" + e.getMessage(), e);
+		}
+		try {
+			Connection con = DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
+			String sql = "alter system kill session '"+sid+","+serial+"'";
+			System.out.println("强制断开连接:"+sql);
+			Statement stmt = con.createStatement();
+			stmt.execute(sql);
+			stmt.close();
+			con.close();
+			con=null;
+		} catch (SQLException e) {
+			System.err.println("SQLException: " + e);
+			throw new Exception("连接数据库失败，原因：" + e.getMessage(), e);
+		}
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked" })
+	private static List queryForList(Connection con, String sql) throws SQLException{
+		List list = new LinkedList();
+		PreparedStatement ps = con.prepareStatement(sql);
+		ResultSet rs = ps.executeQuery();
+        ResultSetMetaData rsmd = ps.getMetaData();
+        // 取得结果集列数
+        int columnCount = rsmd.getColumnCount();
+		Map data=null;
+		while (rs.next()) {
+            data = new HashMap<String, Object>();
+            // 每循环一条将列名和列值存入Map
+            for (int i = 1; i <= columnCount; i++) {
+                data.put(rsmd.getColumnLabel(i), rs.getObject(rsmd
+                        .getColumnLabel(i)));
+            }
+            // 将整条数据的Map存入到List中
+            list.add(data);
+        }
+		return list;
 	}
 }

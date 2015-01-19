@@ -1,0 +1,78 @@
+<h1 class="page-header">查看连接信息</h1>
+
+<div class="container-fluid">
+<div class="row">
+<div class="col-sm-8 col-sm-offset-1">
+<form action="" method="post" class="well">
+  <div class="form-group">
+    <label for="conninfos">选择连接</label>
+    <select class="form-control" name="conninfo" id="conninfo">
+#foreach($conninfo in $conninfos)
+	  <option value="$conninfo.alias">$conninfo.alias</option>
+#end
+	</select>
+  </div>
+  <button type="button" id="btnView" class="btn btn-primary">查看</button>
+</form>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-11 col-sm-offset-1">
+<table id="table"></table>
+</div>
+</div>
+</div>
+<script>
+$(function(){
+	$('#table').bootstrapTable({
+	    columns: [
+	        {field: 'USERNAME', title: '用户名称'}, 
+	        {field: 'SID', title: '会话'}, 
+	        {field: 'SERIAL#', title: '序号'}, 
+	        {field: 'STATUS', title: '状态'},
+	        {field: 'LOGON_TIME', title: '最后连接时间'},
+	        {field: 'op', title: '', width: 1, formatter:function(value,row,index){
+        		return '<button type="button" class="btn btn-xs btn-warning btnKill" data-sid="'+row["SID"]+'" data-serial="'+row["SERIAL#"]+'">断开</button>';
+        	}}
+        ]
+	});
+	
+	$("#btnView").click(function(){
+		$.ajax({
+			type: 'POST',
+			url: '/serverInfo',
+			data:{"alias":$("#conninfo").val()},
+			dataType: 'json',
+			success: function (data) {
+				if(data&&data.resultType==1){
+					alert("查询成功");
+					$('#table').bootstrapTable('load', data.data);
+					$('#table .btnKill').click(function(){
+						if(confirm("将强制断开该连接，是否继续？")){
+							$.ajax({
+								type: 'POST',
+								url: '/serverInfoKill',
+								data:{"alias":$("#conninfo").val(),"sid":$(this).attr("data-sid"),"serial":$(this).attr("data-serial")},
+								dataType: 'json',
+								success: function (data) {
+									if(data&&data.resultType==1){
+										alert("操作成功");
+										$('#table').bootstrapTable('refresh');
+									}else{
+										alert("操作失败");
+										$('#table').bootstrapTable('refresh');
+									}
+								}
+							});
+						}
+					});
+				}
+			}
+		});
+		
+		$("#conninfo").change(function(){
+			$('#table').bootstrapTable('load', {});
+		});
+	});
+});
+</script>
