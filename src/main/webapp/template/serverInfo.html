@@ -44,7 +44,7 @@ $(function(){
 			data:{"alias":$("#conninfo").val()},
 			dataType: 'json',
 			success: function (data) {
-				if(data&&data.resultType==1){
+				if(data.resultType==1){
 					alert("查询成功");
 					$('#table').bootstrapTable('load', data.data);
 					$('#table .btnKill').click(function(){
@@ -55,17 +55,19 @@ $(function(){
 								data:{"alias":$("#conninfo").val(),"sid":$(this).attr("data-sid"),"serial":$(this).attr("data-serial")},
 								dataType: 'json',
 								success: function (data) {
-									if(data&&data.resultType==1){
+									if(data.resultType==1){
 										alert("操作成功");
 										$('#table').bootstrapTable('refresh');
 									}else{
-										alert("操作失败");
+										alert(data.msg);
 										$('#table').bootstrapTable('refresh');
 									}
 								}
 							});
 						}
 					});
+				}else{
+					alert(data.msg);
 				}
 			}
 		});

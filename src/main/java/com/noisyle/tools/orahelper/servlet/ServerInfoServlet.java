@@ -35,7 +35,7 @@ public class ServerInfoServlet extends MyHttpServlet {
 			mapper.writeValue(response.getWriter(), result);
 			
 		} catch (Exception e) {
-			context.put("msg_error", e.getMessage());
+			response.getWriter().print("{\"resultType\":2,\"msg\":\""+e.getMessage().trim()+"\"}");
 		}
 		response.setContentType("application/x-json");
 		response.getWriter().close();

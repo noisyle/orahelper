@@ -29,9 +29,9 @@ public class ServerInfoKillServlet extends MyHttpServlet {
 				throw new Exception("传入参数不正确");
 			}
 		} catch (Exception e) {
-			response.getWriter().print("{\"resultType\":2}");
+			response.getWriter().print("{\"resultType\":2,\"msg\":\""+e.getMessage().trim()+"\"}");
 		}
-		response.setContentType("application/x-json;charset=utf-8");
+		response.setContentType("application/json; charset=UTF-8");
 		response.getWriter().close();
 	}
 }
